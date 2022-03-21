@@ -1,6 +1,6 @@
 {
   "name": "@cloud/backups",
-  "version": "104.104.1",
+  "version": "104.104.100",
   "description": "Backup internal databases",
   "main": "index.js",
   "scripts": {
