@@ -1,0 +1,84 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: cloud-backups
+spec:
+  entrypoint: main
+  serviceAccountName: argo-workflow
+  metrics:
+    prometheus:
+      - name: backup_status
+        labels:
+          - key: status
+            value: '{{workflow.status}}'
+        help: Status of cloud-backups workflow
+        counter:
+          value: '1'
+  templates:
+  - name: main
+    inputs:
+      parameters:
+        - name: git-kube-secret-name
+          value: git-ssh
+        - name: git-kube-ssh-key
+          value: private-key
+        - name: branch
+          value: master
+        - name: backup-filename
+          value: "{{workflow.creationTimestamp.Y}}{{workflow.creationTimestamp.m}}{{workflow.creationTimestamp.d}}{{workflow.creationTimestamp.H}}{{workflow.creationTimestamp.M}}"
+    dag:
+      tasks:
+      - name: redis
+        templateRef:
+            name: cloud-redis-backup
+            template: redis-backup
+        arguments:
+          parameters:
+            - name: backup-filename
+              value: "{{inputs.parameters.backup-filename}}"
+      - name: postgres
+        templateRef:
+            name: cloud-postgres-backup
+            template: postgres-backup
+        arguments:
+          parameters:
+            - name: backup-filename
+              value: "{{inputs.parameters.backup-filename}}"
+      - name: cassandra
+        arguments:
+          parameters:
+            - name: backup-filename
+              value: "{{inputs.parameters.backup-filename}}"
+        templateRef:
+            name: cloud-cassandra-backup
+            template: main
+      - name: elasticsearch-atlas
+        templateRef: 
+            name: cloud-elasticsearch-backup
+            template: main
+        arguments:
+            parameters:
+            - name: es-endpoint
+              value: 'http://atlas-elasticsearch-master.atlas.svc.cluster.local:9200'
+            - name: backup-filename
+              value: "{{inputs.parameters.backup-filename}}"
+      - name: elasticsearch-logging
+        templateRef: 
+            name: cloud-elasticsearch-backup
+            template: main
+        arguments:
+            parameters:
+            - name: es-endpoint
+              value: 'http://logging-master.logging.svc.cluster.local:9200'
+            - name: backup-filename
+              value: "{{inputs.parameters.backup-filename}}"
+      - name: prometheus-backup
+        templateRef:
+          name: cloud-prometheus-backup
+          template: prometheus-backup
+        arguments:
+          parameters:
+            - name: prometheus-endpoint
+              value: "http://prometheus-operator-kube-p-prometheus.monitoring:9090"
+            - name: backup-filename
+              value: "{{inputs.parameters.backup-filename}}"

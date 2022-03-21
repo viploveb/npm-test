@@ -1,0 +1,9 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: cloud-backups-cron-wf
+spec:
+  schedule: "0 3 * * *"
+  workflowSpec:
+    workflowTemplateRef:
+      name: cloud-backups

@@ -1,0 +1,38 @@
+{
+  "name": "@cloud/backups",
+  "version": "104.103.101",
+  "description": "Backup internal databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "license": "MIT",
+  "config": {
+    "labels": {
+      "orchestration.atlan.com/verified": "false",
+      "orchestration.atlan.com/type": "utility",
+      "orchestration.atlan.com/certified": "false"
+    },
+    "annotations": {
+      "orchestration.atlan.com/name": "Backup",
+      "orchestration.atlan.com/allowSchedule": "true",
+      "orchestration.atlan.com/dependentPackage": "",
+      "orchestration.atlan.com/emoji": "🗑️",
+      "orchestration.atlan.com/categories": "utility,admin,backup",
+      "orchestration.atlan.com/icon": "https://atlan.com/assets/img/atlan-blue.6ed81a56.svg",
+      "orchestration.atlan.com/logo": "https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
+    }
+  },
+  "author": {
+    "name": "Atlan",
+    "email": "hello@atlan.com",
+    "url": "https://atlan.com"
+  },
+  "dependencies": {
+    "@cloud/cassandra-backup": "^0.0.4",
+    "@cloud/elasticsearch-backup": "^0.0.8",
+    "@cloud/postgres-backup": "^0.0.5",
+    "@cloud/prometheus-backup": "^0.0.5",
+    "@cloud/redis-backup": "^0.0.5"
+  }
+}
